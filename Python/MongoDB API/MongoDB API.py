@@ -9,7 +9,7 @@ class MongoAPI:
     def __init__(self, data):
         log.basicConfig(level=log.DEBUG, format='%(asctime)s %(levelname)s:\n%(message)s\n')
         # self.client = MongoClient("mongodb://localhost:27017/")  # When only Mongo DB is running on Docker.
-        self.client = MongoClient("mongodb://mymongo_1:27017/")     # When both Mongo and This application is running on
+        self.client = MongoClient("mongodb://localhost:27017/")     # When both Mongo and This application is running on
                                                                     # Docker and we are using Docker Compose
 
         database = data['database']
@@ -55,7 +55,7 @@ def base():
                     mimetype='application/json')
 
 
-@app.route('/mongodb', methods=['GET'])
+@app.route('/mongodb/sensor', methods=['GET'])
 def mongo_read():
     data = request.json
     if data is None or data == {}:
@@ -69,7 +69,7 @@ def mongo_read():
                     mimetype='application/json')
 
 
-@app.route('/mongodb', methods=['POST'])
+@app.route('/mongodb/sensor', methods=['POST'])
 def mongo_write():
     data = request.json
     if data is None or data == {} or 'Document' not in data:
@@ -82,7 +82,7 @@ def mongo_write():
                     status=200,
                     mimetype='application/json')
 
-@app.route('/mongodb', methods=['PUT'])
+@app.route('/mongodb/sensor', methods=['PUT'])
 def mongo_update():
     data = request.json
     if data is None or data == {} or 'Filter' not in data:
@@ -96,8 +96,64 @@ def mongo_update():
                     mimetype='application/json')
 
 
-@app.route('/mongodb', methods=['DELETE'])
+@app.route('/mongodb/sensor', methods=['DELETE'])
 def mongo_delete():
+    data = request.json
+    if data is None or data == {} or 'Filter' not in data:
+        return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                        status=400,
+                        mimetype='application/json')
+    obj1 = MongoAPI(data)
+    response = obj1.delete(data)
+    return Response(response=json.dumps(response),
+                    status=200,
+                    mimetype='application/json')
+
+########################################################################3
+
+@app.route('/mongodb/user', methods=['GET'])
+def mongo_read_user():
+    data = request.json
+    if data is None or data == {}:
+        return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                        status=400,
+                        mimetype='application/json')
+    obj1 = MongoAPI(data)
+    response = obj1.read()
+    return Response(response=json.dumps(response),
+                    status=200,
+                    mimetype='application/json')
+
+
+@app.route('/mongodb/user', methods=['POST'])
+def mongo_write_user():
+    data = request.json
+    if data is None or data == {} or 'Document' not in data:
+        return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                        status=400,
+                        mimetype='application/json')
+    obj1 = MongoAPI(data)
+    response = obj1.write(data)
+    return Response(response=json.dumps(response),
+                    status=200,
+                    mimetype='application/json')
+
+@app.route('/mongodb/user', methods=['PUT'])
+def mongo_update_user():
+    data = request.json
+    if data is None or data == {} or 'Filter' not in data:
+        return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                        status=400,
+                        mimetype='application/json')
+    obj1 = MongoAPI(data)
+    response = obj1.update()
+    return Response(response=json.dumps(response),
+                    status=200,
+                    mimetype='application/json')
+
+
+@app.route('/mongodb/user', methods=['DELETE'])
+def mongo_delete_user():
     data = request.json
     if data is None or data == {} or 'Filter' not in data:
         return Response(response=json.dumps({"Error": "Please provide connection information"}),
