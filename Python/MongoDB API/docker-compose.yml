@@ -1,11 +1,11 @@
 version: "3"
 services: 
-    localhost:
+    mymongo_1:
         image: "mongo"
     
     myreader:
         build: .
         depends_on: 
-            - localhost
+            - mymongo_1
         ports:
             - "5001:5001"
